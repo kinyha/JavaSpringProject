@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Show</title>
+    <style>
+        .layer1 {
+            margin-left: 0%; /* Отступ слева */
+            background-color: #e8e8e8; /* Цвет фона */
+            padding: 15px; /* Поля вокруг текста */
+        }
+    </style>
+</head>
+<body>
+<div class="layer1">
+    <br/>
+    <div style="text-align: center;"><strong>Страница книги</strong></div>
+    <br/>
+    <div style="text-align: center;"><i>/books/{id}</i></div>
+    <br/>
+    <br/>
+    <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></p>
+    <br/>
+    <div th:if="${personByBookId != null}">
+        <div style="text-align: left;"><a th:href="@{/people/{id}(id=${personByBookId.getUserId()})}"
+                                          th:text="${'Книга сейчас у: ' + personByBookId.getName() + ', ' + personByBookId.getAge()}">person</a>
+        </div>
+        <form th:method="PATCH" th:action="@{/books/{id}/free(id=${book.getBookId()})}">
+            <br/>
+            <input type="submit" value="Освободить книгу"/>
+        </form>
+    </div>
+
+    <div th:if="${personByBookId == null}">
+        <span>Это книга свободна. Кому назначить её?</span>
+        <form th:method="PATCH" th:action="@{/books/{id}/give(id=${book.getBookId()})}" th:object="${person}">
+            <label for="person">Выберите человека</label>
+            <select th:object="${person}" th:field="*{userId}" id="person">
+                <option th:each="person : ${people}" th:value="${person.getUserId()}" th:text="${person.getName()}">
+                </option>
+            </select>
+            <input type="submit" value="Назначить книгу книгу"/>
+        </form>
+
+    </div>
+    <hr/>
+
+    <form th:method="GET" th:action="@{/books/{id}/edit(id=${book.getBookId()})}">
+        <input type="submit" value="Редактировать"/>
+    </form>
+    <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getBookId()})}">
+        <input type="submit" value="Удалить"/>
+    </form>
+</div>
+</body>
+</html>

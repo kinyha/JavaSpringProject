@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IndexBooks</title>
+    <style>
+        .layer1 {
+            background-color: #D36037; /* Цвет фона */
+        }
+
+        .layer2 {
+            margin-left: 20%; /* Отступ слева */
+            background-color: #ccc; /* Цвет фона */
+            padding: 10px; /* Поля вокруг текста */
+        }
+    </style>
+</head>
+<body>
+<div class="layer1">
+    <div class="layer2">
+        <br/>
+        <div style="text-align: center;"><strong>Страница со списком всех книг</strong></div>
+        <br/>
+        <div style="text-align: center;"><i>/books</i></div>
+        <br/>
+        <br/>
+        <div th:each="book : ${books}">
+            <div style="text-align: left;"><a th:href="@{/books/{id}(id=${book.getBookId()})}"
+                                              th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></a></div>
+        </div>
+        <br/>
+        <hr/>
+
+        <div style="text-align: left;"><a href="/books/new">Добавить книгу</a></div>
+    </div>
+</div>
+</body>
+</html>

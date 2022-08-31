@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <style>
+        .layer1 {
+            background-color: #D36037; /* Цвет фона */
+        }
+
+        .layer2 {
+            margin-left: 20%; /* Отступ слева */
+            background-color: #ccc; /* Цвет фона */
+            padding: 10px; /* Поля вокруг текста */
+        }
+    </style>
+</head>
+<body>
+<div class="layer1">
+    <div class="layer2">
+        <br/>
+        <div style="text-align: center;"><strong>Страница со списком всех людей</strong></div>
+        <br/>
+        <div style="text-align: center;"><i>/people</i></div>
+        <br/>
+        <br/>
+        <div th:each="person : ${people}">
+            <div style="text-align: left;"><a th:href="@{/people/{id}(id=${person.getUserId()})}"
+                                              th:text="${person.getName() + ', ' + person.getAge()}">user</a></div>
+        </div>
+        <br/>
+        <hr/>
+
+        <div style="text-align: left;"><a href="/people/new">Добавить человека</a></div>
+        <hr/>
+        <br/>
+        <a th:href="@{/books}">Книги</a>
+        <hr/>
+        <br/>
+    </div>
+</div>
+</body>
+</html>
