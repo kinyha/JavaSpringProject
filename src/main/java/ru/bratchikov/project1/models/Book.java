@@ -2,33 +2,55 @@ package ru.bratchikov.project1.models;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.time.MonthDay;
+import java.util.Date;
 
+@Entity
+@Table(name = "book")
 public class Book {
+    @Id
+    @Column(name = "book_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookId;
-    private int userId;
+
     @NotEmpty(message = "Title is empty")
     @Size(min = 1, max = 30, message = "Title must be between 1 and 30 characters")
+    @Column(name = "title")
     private String title;
+
     @NotEmpty(message = "Author is empty")
     @Size(min = 1, max = 30, message = "Author must be between 1 and 30 characters")
+    @Column(name = "author")
     private String author;
+
     @Min(value = 0, message = "Year should be greater than 0")
+    @Column(name = "year")
     private int year;
+
+    @Column(name = "created_AT")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Transient
+    private boolean expired;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private Person person;
 
 
     public Book() {
     }
 
-    public Book(int bookId,int userId, String title, String author, int year) {
+    public Book(int bookId, String title, String author, int year) {
         this.bookId = bookId;
-        this.userId = userId;
         this.title = title;
         this.author = author;
         this.year = year;
     }
-
 
     public int getBookId() {
         return bookId;
@@ -38,13 +60,7 @@ public class Book {
         this.bookId = bookId;
     }
 
-    public int getUserId() {
-        return userId;
-    }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public String getTitle() {
         return title;
@@ -70,7 +86,39 @@ public class Book {
         this.year = year;
     }
 
-    public boolean isUnAvailable() {
-        return this.userId != 0;
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "bookId=" + bookId +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", year=" + year +
+                ", createdAt=" + createdAt +
+                ", person=" + person +
+                '}';
     }
 }
