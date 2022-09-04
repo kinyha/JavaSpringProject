@@ -9,9 +9,7 @@ import ru.bratchikov.project1.models.Person;
 import ru.bratchikov.project1.services.BooksService;
 import ru.bratchikov.project1.services.PeopleService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/books")
@@ -28,15 +26,16 @@ public class BooksController {
     }
 
     @GetMapping()
-    public String index(Model model, HttpServletRequest request) {
-        int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-        int books_per_page = request.getParameter("books_per_page") == null ? 1 : Integer.parseInt(request.getParameter("books_per_page"));
-        Boolean isSorted = Boolean.valueOf(request.getParameter("sort_by_year"));
-        List<Book> books = booksService.getAllSortedByYearAndPage(page, books_per_page);
-        if (isSorted) {
-            model.addAttribute("books", books);
+    public String index(Model model, @RequestParam(value = "page", required = false) Integer page,
+                        @RequestParam(value = "books_per_page", required = false) Integer booksPerPage,
+                        @RequestParam(value = "sort_by_year", required = false) Boolean sortByYear) {
+        if (sortByYear == null) {
+            sortByYear = false;
+        }
+        if (page == null || booksPerPage == null) {
+            model.addAttribute("books", booksService.findAll(sortByYear));//
         } else {
-            model.addAttribute("books", booksService.findAll());
+            model.addAttribute("books", booksService.findWithPagination(page, booksPerPage, sortByYear));
         }
         return "books/index";
     }
@@ -44,8 +43,13 @@ public class BooksController {
     @GetMapping("/{id}")
     public String show(@ModelAttribute("person") Person person, @PathVariable("id") int bookId, Model model) {
         model.addAttribute("book", booksService.findOne(bookId));
-        model.addAttribute("people", peopleService.findAll());
-        model.addAttribute("personByBookId", booksService.findPersonByBookId(bookId));
+        Person bookOwner = booksService.getBookOwner(bookId);
+
+        if (bookOwner != null) {
+            model.addAttribute("personByBookId", bookOwner);
+        } else {
+            model.addAttribute("people", peopleService.findAll());
+        }
         return "books/show";
     }
 
@@ -63,6 +67,9 @@ public class BooksController {
     @PostMapping()
     public String create(@ModelAttribute("book") @Valid Book book,
                          BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "books/new";
+        }
         booksService.save(book);
         return "redirect:/books";
     }
@@ -90,47 +97,24 @@ public class BooksController {
     }
 
     @PatchMapping("/{id}/give")
-    public String giveBook(@ModelAttribute("person") Person person,
-                           BindingResult bindingResult, @PathVariable("id") int bookId) {
-        System.out.println(person.getUserId() + " -- " + bookId);
-        booksService.giveBook(person.getUserId(), bookId);
-        return "redirect:/books";
+    public String giveBook(@ModelAttribute("person") Person person, @PathVariable("id") int bookId) {
+        booksService.giveBook(bookId, person);
+        return "redirect:/books/" + bookId;
     }
 
     @PatchMapping("/{id}/free")
     public String freeBook(@PathVariable("id") int bookId) {
         booksService.freeBook(bookId);
-        return "redirect:/books";
+        return "redirect:/books/" + bookId;
     }
 
-    @PostMapping ("/search")
-    public String search(@ModelAttribute("query") String query, Model model) {
-        model.addAttribute("book", booksService.findBookByTitle(query));
+    @PostMapping ("/search")  //?? @RequestParam("query")
+    public String search(@RequestParam("query") String query, Model model) {
+        model.addAttribute("books", booksService.searchByTitle(query));
         return "books/search";
     }
-//    @PatchMapping("/search/{searchQuery}")
-//    public String search(@ModelAttribute("searchQuery") String searchQuery, Model model) {
-//        //model.addAttribute("books", booksService.search(searchQuery));
-//        return "books/index";
-//    }
-
     @GetMapping("/search")
-    public String search(Model model) {
-        //model.addAttribute("book", booksService.findBookByTitle(search));
+    public String search() {
         return "books/search";
     }
-
-
-//        model.addAttribute("book", new Book());
-//        return "books/search";
-//    }
-
-//    @PostMapping("/search")
-//    public String search(@ModelAttribute("book") @Valid Book book,
-//                         BindingResult bindingResult) {
-//
-//        booksService.findBookByTitle(book.getTitle());
-//        return "redirect:/books/search";
-//    }
-
 }

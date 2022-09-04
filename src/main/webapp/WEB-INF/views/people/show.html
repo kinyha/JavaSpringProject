@@ -13,14 +13,21 @@
 <br/>
 <br/>
 <p th:text="${person.getName() + ', ' + person.getAge()}">VALUE</p>
+<div th:if="${books.isEmpty()}">
+    <p>Человек пока не взял ни одной книги</p>
+    <hr/>
+</div>
 
-
-<hr/>
-<div style="text-align: -moz-left;"><strong>Книги:</strong></div>
-<div th:unless="${books.isEmpty()}">
+<div th:if="${!books.isEmpty()}">
+    <hr/>
+    <div style="text-align: -moz-left;"><strong>Книги:</strong></div>
+    <br/>
     <div th:each="book : ${books}">
-        <div style="text-align: left;"><a th:href="@{/books/{id}(id=${book.getBookId()})}"
-                                          th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}">book</a>
+        <div style="text-align: left;"><span th:href="@{/books/{id}(id=${book.getBookId()})}"
+                                          th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"
+                                            th:style="${book.isExpired()} ? 'color: red' : 'color:black'">
+            book
+        </span>
         </div>
     </div>
     <hr/>

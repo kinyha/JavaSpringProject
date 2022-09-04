@@ -24,10 +24,9 @@ public class Person {
     @Column(name = "age")
     private int age;
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "person")
     private List<Book> books;
-    public Person(int userId, String name, int age) {
-        this.userId = userId;
+    public Person(String name, int age) {
         this.name = name;
         this.age = age;
     }

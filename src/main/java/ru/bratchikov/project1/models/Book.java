@@ -33,7 +33,7 @@ public class Book {
     @Column(name = "created_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-
+    //Hiber не видит
     @Transient
     private boolean expired;
 
@@ -45,8 +45,7 @@ public class Book {
     public Book() {
     }
 
-    public Book(int bookId, String title, String author, int year) {
-        this.bookId = bookId;
+    public Book(String title, String author, int year) {
         this.title = title;
         this.author = author;
         this.year = year;
@@ -59,8 +58,6 @@ public class Book {
     public void setBookId(int bookId) {
         this.bookId = bookId;
     }
-
-
 
     public String getTitle() {
         return title;
